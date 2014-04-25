@@ -3,8 +3,8 @@ require 'pnthr'
 
 describe Pnthr do
 
-  host_url = 'http://localhost:3000/'
-  ssl_on = false
+  host_url = 'https://pnthr-api.herokuapp.com/'
+  ssl_on = true
   app_id = '534c33bb6637350002000000'
   app_secret = '9857ec6046ee8d22b90ce68214a8304b'
 
@@ -24,7 +24,7 @@ describe Pnthr do
   end
 
   it "should not use SSL for local tests" do
-    pnthr.request[:ssl].should be false
+    pnthr.request[:ssl].should be true
   end
 
   it "should properly set the request url" do
@@ -52,7 +52,7 @@ describe Pnthr do
   end
 
   it "should respond with a predictable string" do
-    response.body.should eq 'NuCn7VFKvrcLzneoRG4='
+    response.body.should eq 'NuCn7VFKvrcLzneoRG4=-534c33bb66373500'
   end
 
   it "should encrypt with a predictable string" do

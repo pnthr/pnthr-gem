@@ -13,8 +13,8 @@ module Pnthr
       @cipher = OpenSSL::Cipher::AES.new(secret.length * 8, :CFB)
 
       options[:url] ||= 'https://pnthr-api.herokuapp.com/'
-      options[:ssl].nil? ? true : options[:ssl]
-      options[:iv] ||= @cipher.random_iv
+      options[:ssl] = options[:ssl].nil? ? true : options[:ssl]
+      options[:iv] ||= Base64.encode64(rand.to_s)[0..15]
 
       @request = {
         url: options[:url],
@@ -75,8 +75,7 @@ module Pnthr
       https = Net::HTTP.new(@request[:uri].host, @request[:uri].port)
       https.use_ssl = @request[:ssl]
 
-      package = Base64.encode64(payload).strip! + "-#{@request[:iv]}"
-      puts package
+      package = Base64.encode64(payload).strip! + "-" + @request[:iv]
 
       https.post(@request[:uri].path, package, { 'pnthr' => @request[:id] })
     end

@@ -1,3 +1,3 @@
 module Pnthr
-  VERSION = "0.0.7"
+  VERSION = "1.0.4"
 end

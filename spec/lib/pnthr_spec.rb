@@ -5,8 +5,8 @@ describe Pnthr do
 
   host_url = 'https://pnthr-api.herokuapp.com/'
   ssl_on = true
-  app_id = '534c33bb6637350002000000'
-  app_secret = '9857ec6046ee8d22b90ce68214a8304b'
+  app_id = '536d49b86336350002000000'
+  app_secret = '15e0497a57c6340ccd81b74f0e5de1d7'
 
   pnthr = Pnthr::Security.new(app_id, app_secret, url: host_url, ssl: ssl_on, iv: app_id[0..15])
   response = pnthr.roar('this is a test')
@@ -52,24 +52,21 @@ describe Pnthr do
   end
 
   it "should respond with a predictable string" do
-    response.body.should eq 'NuCn7VFKvrcLzneoRG4=-534c33bb66373500'
+    response.body.should eq 'uUeZihDFPJ/Pm7k/HqA=-536d49b863363500'
   end
 
   it "should encrypt with a predictable string" do
     test = Base64.encode64(pnthr.encrypt('this is a test')).strip! + "-#{app_id[0..15]}"
 
-    test.should eq 'PR/Sfl7o4Y0gjlYZyWg=-534c33bb66373500'
+    test.should eq 'ynXLtC+JSE/ApHPT/PQ=-536d49b863363500'
   end
 
-  # it "should fail without user, password, name, city, state, and products" do
-  #   expect { CorteraApi.new(user: 'foo').login }.to raise_error(RuntimeError, 'A password must be provided for Cortera API')
-  #   expect { CorteraApi.new(password: 'bar').login }.to raise_error(RuntimeError, 'A user must be provided for Cortera API')
-  #
-  #   cortera.get()["ReportResult"]["Status"].should eq 400
-  # end
-  #
-  # it "should fail authentication" do
-  #   cortera.get({:params => {name: "Arrae", city: "Denver", state: "CO"}})["ReportResult"]["Status"].should eq 401
-  # end
+  it "should cage with a predictable string" do
+    pnthr.cage('this is a test').should eq 'ynXLtC+JSE/ApHPT/PQ=-536d49b863363500'
+  end
+
+  it "should release with a predictable string" do
+    pnthr.release('uUeZihDFPJ/Pm7k/HqA=-536d49b863363500', 'testes123').should eq 'this is a test'
+  end
 
 end

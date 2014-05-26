@@ -4,9 +4,11 @@ require 'pnthr'
 describe Pnthr do
 
   host_url = 'https://pnthr-api.herokuapp.com/'
+  # host_url = 'http://localhost:3000/'
   ssl_on = true
-  app_id = '534c33bb6637350002000000'
-  app_secret = '9857ec6046ee8d22b90ce68214a8304b'
+  app_id = '538362a63832640002020000'
+  app_secret = '8d1067143a608920a56f4d4a7c6e3d4b'
+  app_password = '22e5ab5743ea52caf34abcc02c0f161d'
 
   pnthr = Pnthr::Security.new(app_id, app_secret, url: host_url, ssl: ssl_on, iv: app_id[0..15])
   response = pnthr.roar('this is a test')
@@ -52,13 +54,13 @@ describe Pnthr do
   end
 
   it "should respond with a predictable string" do
-    response.body.should eq 'NuCn7VFKvrcLzneoRG4=-534c33bb66373500'
+    response.body.should eq 'VlxVfECSfl9Gd+Coafs=-538362a638326400'
   end
 
   it "should encrypt with a predictable string" do
     test = Base64.encode64(pnthr.encrypt('this is a test')).strip! + "-#{app_id[0..15]}"
 
-    test.should eq 'PR/Sfl7o4Y0gjlYZyWg=-534c33bb66373500'
+    test.should eq 'Xwt+WH8rcvyxw6t28LA=-538362a638326400'
   end
 
   # it "should fail without user, password, name, city, state, and products" do

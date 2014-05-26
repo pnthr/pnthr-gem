@@ -4,7 +4,15 @@ require "net/http"
 require "net/https"
 require "base64"
 
+#
+# Pnthr Module
+#
+# + Needs initializer or config
+#
 module Pnthr
+  #
+  # Everything lives in the security class for now
+  #
   class Security
 
     attr_accessor :request, :cipher
@@ -27,10 +35,29 @@ module Pnthr
     end
 
     #
-    # Roar - Encrypts the payload, makes the request and returns the response
+    # Encrypt the payload, makes the request and returns the response
     #
     def roar(payload)
-      make_request(encrypt(payload))
+      https = Net::HTTP.new(@request[:uri].host, @request[:uri].port)
+      https.use_ssl = @request[:ssl]
+      https.post(@request[:uri].path, cage(payload), { 'pnthr' => @request[:id] })
+    end
+
+    #
+    # Cage - Will make our payload without sending
+    #
+    def cage(payload)
+      Base64.encode64(encrypt(payload)).strip! + "-" + @request[:iv]
+    end
+
+    #
+    # Release - Will fully decrypt a payload to raw text
+    #
+    def release(payload, password)
+      part = payload.split('-')
+
+      level1 = decrypt(Base64.decode64(part[0]), @request[:secret], part[1])
+      decrypt(level1, Digest::MD5.hexdigest(password), part[1])
     end
 
     #
@@ -40,7 +67,6 @@ module Pnthr
     # - CFB is used
     #
     # + Needs HMAC
-    # + Needs variable IV to be passed with request
     #
     def encrypt(data, key = nil, iv = nil)
       key ||= @request[:secret]
@@ -56,8 +82,6 @@ module Pnthr
     #
     # Decrypt - Simple AES decryption
     #
-    # + Needs to retrieve IV from the first layer
-    #
     def decrypt(data, key = nil, iv = nil)
       key ||= @request[:secret]
       iv ||= @request[:iv]
@@ -66,18 +90,7 @@ module Pnthr
       @cipher.key = key
       @cipher.iv = iv
 
-      @cipher.update(Base64.decode64(data))
-    end
-
-    private
-
-    def make_request(payload)
-      https = Net::HTTP.new(@request[:uri].host, @request[:uri].port)
-      https.use_ssl = @request[:ssl]
-
-      package = Base64.encode64(payload).strip! + "-" + @request[:iv]
-
-      https.post(@request[:uri].path, package, { 'pnthr' => @request[:id] })
+      @cipher.update(data)
     end
 
   end

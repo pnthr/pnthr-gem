@@ -5,68 +5,68 @@ describe Pnthr do
 
   host_url = 'https://pnthr-api.herokuapp.com/'
   ssl_on = true
-  app_id = '538362a63832640002020000'
-  app_secret = '8d1067143a608920a56f4d4a7c6e3d4b'
-  app_password = '22e5ab5743ea52caf34abcc02c0f161d'
+  id = '53a1c59f6239370002000000'
+  secret = 'aa88906ffcf6c59aaf5908d3900f21a6'
+  iv = id[0..15]
 
-  pnthr = Pnthr::Security.new(app_id, app_secret, url: host_url, ssl: ssl_on, iv: app_id[0..15])
+  pnthr = Pnthr::Security.new(id, secret, url: host_url, ssl: ssl_on, iv: iv)
   response = pnthr.roar('this is a test')
 
-  it "should have a valid host url" do
-    URI.parse(host_url).should be_a_kind_of(URI::HTTP)
+  it 'should have a valid host url' do
+    expect(URI.parse(host_url)).to be_a_kind_of(URI::HTTP)
   end
 
-  it "should have a host url with a trailing slash" do
-    /\/$/.match(host_url).should_not be_nil
+  it 'should have a host url with a trailing slash' do
+    expect(/\/$/.match(host_url)).not_to be_nil
   end
 
-  it "should request the root path" do
-    pnthr.request[:uri].path.should eq "/"
+  it 'should request the root path' do
+    expect(pnthr.request[:uri].path).to eq '/'
   end
 
-  it "should not use SSL for local tests" do
-    pnthr.request[:ssl].should be true
+  it 'should not use SSL for local tests' do
+    expect(pnthr.request[:ssl]).to be true
   end
 
-  it "should properly set the request url" do
-    pnthr.request[:url].should eq host_url
+  it 'should properly set the request url' do
+    expect(pnthr.request[:url]).to eq host_url
   end
 
-  it "should properly set the ssl option" do
-    pnthr.request[:ssl].should eq ssl_on
+  it 'should properly set the ssl option' do
+    expect(pnthr.request[:ssl]).to eq ssl_on
   end
 
-  it "should properly set the app id" do
-    pnthr.request[:id].should eq app_id
+  it 'should properly set the app id' do
+    expect(pnthr.request[:id]).to eq id
   end
 
-  it "should properly set the app secret" do
-    pnthr.request[:secret].should eq app_secret
+  it 'should properly set the app secret' do
+    expect(pnthr.request[:secret]).to eq secret
   end
 
-  it "should properly set the app initialization vector" do
-    pnthr.request[:iv].should eq app_id[0..15]
+  it 'should properly set the app initialization vector' do
+    expect(pnthr.request[:iv]).to eq id[0..15]
   end
 
-  it "should respond with HTTP 200 code" do
-    response.code.should eq '200'
+  it 'should respond with HTTP 200 code' do
+    expect(response.code).to eq '200'
   end
 
-  it "should respond with a predictable string" do
-    response.body.should eq 'VlxVfECSfl9Gd+Coafs=-538362a638326400'
+  it 'should respond with a predictable string' do
+    expect(response.body).to eq 'U13j4B/NMU7QjkE5IHU=-53a1c59f62393700'
   end
 
-  it "should encrypt with a predictable string" do
-    test = Base64.encode64(pnthr.encrypt('this is a test')).strip! + "-#{app_id[0..15]}"
-    test.should eq 'Xwt+WH8rcvyxw6t28LA=-538362a638326400'
+  it 'should encrypt with a predictable string' do
+    test = Base64.encode64(pnthr.encrypt('this is a test')).strip! + '-' + iv
+    expect(test).to eq 'PtDh+VSHLceJSRGnNOk=-53a1c59f62393700'
   end
 
-  it "should cage with a predictable string" do
-    pnthr.cage('this is a test').should eq 'ynXLtC+JSE/ApHPT/PQ=-536d49b863363500'
+  it 'should cage with a predictable string' do
+    expect(pnthr.cage('this is a test')).to eq 'PtDh+VSHLceJSRGnNOk=-53a1c59f62393700'
   end
 
-  it "should release with a predictable string" do
-    pnthr.release('uUeZihDFPJ/Pm7k/HqA=-536d49b863363500', 'testes123').should eq 'this is a test'
+  it 'should release with a predictable string' do
+    expect(pnthr.release('U13j4B/NMU7QjkE5IHU=-53a1c59f62393700', 'password')).to eq 'this is a test'
   end
 
 end

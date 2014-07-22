@@ -1,8 +1,8 @@
-require "pnthr/version"
-require "uri"
-require "net/http"
-require "net/https"
-require "base64"
+require 'pnthr/version'
+require 'uri'
+require 'net/http'
+require 'net/https'
+require 'base64'
 
 #
 # Pnthr Module
